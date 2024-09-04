@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { DataTable, DataTableStateEvent } from 'primereact/datatable';
+import { useState, useEffect, useRef } from 'react'
+import { DataTable } from 'primereact/datatable';
 import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator';
 import { Column } from 'primereact/column';
 import { OverlayPanel } from 'primereact/overlaypanel';
@@ -7,8 +7,6 @@ import { Button } from 'primereact/button';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { BiChevronDown } from 'react-icons/bi';
 import { useLocalStorage } from 'primereact/hooks';
-import { VirtualScrollerLoadingTemplateOptions  } from 'primereact/virtualscroller';
-import { Skeleton } from 'primereact/skeleton';
 import './App.css'
 
 interface ITableData {
@@ -31,8 +29,8 @@ function App() {
   const [page, setPage] = useState(0);
   const [actualPage, setActualPage] = useState(0);
   const [selectrows, setSelectRows] = useState<number>(0)
-  const [indexes, setIndexes] = useState<number[]>([])
-  const [deselected, setDeselected] = useLocalStorage<number[]>([],'deselected')
+
+  // const [deselected, setDeselected] = useLocalStorage<number[]>([],'deselected')
 
   const onPageChange = (event: PaginatorPageChangeEvent) => {
     setActualPage((event.first / 12) + 1);
@@ -108,29 +106,29 @@ function App() {
     
     setSelectedTableData(selectedRows)
 
-    const deselectedRowIndices = tableData
-    .map((row, index) => ({ row, index }))
-    .filter(({ row }) => !selectedRows.some((selectedRow: ITableData) => selectedRow.id === row.id))
-    .map(({ index }) => index);
+    // const deselectedRowIndices = tableData
+    // .map((row, index) => ({ row, index }))
+    // .filter(({ row }) => !selectedRows.some((selectedRow: ITableData) => selectedRow.id === row.id))
+    // .map(({ index }) => index);
 
-    setDeselected(deselectedRowIndices);
+    // setDeselected(deselectedRowIndices);
 
   };
 
-  const handleNotSelect = (selectedTableData: ITableData[]) => {
+  // const handleNotSelect = (selectedTableData: ITableData[]) => {
 
   
     
 
-    const data = [...selectedTableData];
+  //   const data = [...selectedTableData];
 
-    deselected.forEach((index) => {
-      data.splice(index, 1);
-    })
+  //   deselected.forEach((index) => {
+  //     data.splice(index, 1);
+  //   })
 
-    setSelectedTableData(data);
+  //   setSelectedTableData(data);
     
-  }
+  // }
 
   return (
     <>

@@ -6,7 +6,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { BiChevronDown } from 'react-icons/bi';
-import { useLocalStorage } from 'primereact/hooks';
+// import { useLocalStorage } from 'primereact/hooks';
 import './App.css'
 
 interface ITableData {

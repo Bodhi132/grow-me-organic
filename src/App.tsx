@@ -30,7 +30,6 @@ function App() {
   const [page, setPage] = useState(0);
   const [actualPage, setActualPage] = useState(0);
   const [selectrows, setSelectRows] = useState<number>(0)
-  const [change, setChange] = useState(false)
 
   const [deselected, setDeselected] = useLocalStorage<number[]>([], 'deselected')
 
@@ -69,85 +68,14 @@ function App() {
   };
 
   useEffect(() => {
-    console.log(page);
     handleFetch();
-    window.onload = () => {
-      localStorage.clear();
-    };
+    localStorage.clear()
   }, [])
-
-  // useEffect(() => {
-  //   // onUnselect();
-  //   handleFetch();
-  // }, [page]);
-
-  // useEffect(() => {
-  //   onUnselect()
-  // }, [selectedTableData])
-
-  // useEffect(() => {
-  //   if(change === false) {
-  //     if (tableData.length > 0 && deselected.length > 0) {
-  //       const filteredRows = tableData.filter(
-  //         (_, index) => !deselected.includes(index)
-  //       );
-  //       setSelectedTableData(filteredRows);
-  //     }
-  //   }
-  // }, [tableData, deselected,page,change]);
 
 
   useEffect(() => {
     handleSelectRows(selectrows);
   }, [tableData, page]);
-
-
-  // const handleSelectRows = (rows: number) => {
-
-  //   const rowsPerPage = 12;
-
-  //   if (rows > 0) {
-  //     if (page > 0 && rows > rowsPerPage) {
-  //       const rhs = rows - rowsPerPage * (actualPage - 1)
-  //       if (rhs > 0 && deselected.length === 0) {
-  //         setSelectedTableData(tableData.slice(0, rhs));
-  //         console.log('selectedTableData',page,rhs);
-          
-  //       }
-  //       if(rhs > 0 && deselected.length > 0)
-  //       {
-  //         console.log('next');
-          
-  //         if(deselected.length > 0)
-  //         {
-  //           let filteredRows = tableData.filter(
-  //             (_, index) => !deselected.includes(index)
-  //           );
-  //           filteredRows = filteredRows.slice(0, rhs);
-  //           console.log(filteredRows);
-            
-  //           setSelectedTableData(filteredRows);
-  //         }
-  //       }
-  //     }}
-  //     if (page === 0 && rows > rowsPerPage) {
-
-  //       if(deselected.length > 0 )
-  //         {
-  //           let filteredRows = tableData.filter(
-  //             (_, index) => !deselected.includes(index)
-  //           );
-  //           filteredRows = filteredRows.slice(0, rows);
-  //           setSelectedTableData(filteredRows);
-  //         }
-  //       setSelectedTableData(tableData.slice(0, rows));
-  //     }
-    
-  //   else {
-
-  //     setSelectedTableData([]);
-  //   }
-  // }
 
   const handleSelectRows = (rows: number) => {
     const rowsPerPage = 12;
@@ -173,47 +101,12 @@ function App() {
       }
   
       setSelectedTableData(filteredRows);
-      console.log('selectedTableData', page, rhs, filteredRows);
     } else {
       setSelectedTableData([]);
     }
   };
 
-  // const handleSelectionChange = (e: any) => {
-  //   const selectedRows = e.value;
-
-
-  //   setSelectedTableData(selectedRows)
-
-
-  //   // const deselectedRowIndices = tableData
-  //   // .map((row, index) => ({ row, index }))
-  //   // .filter(({ row }) => !selectedRows.some((selectedRow: ITableData) => selectedRow.id === row.id))
-  //   // .map(({ index }) => index);
-
-  //   // setDeselected(deselectedRowIndices);
-
-
-
-  // };
-
-  // const handleNotSelect = (selectedTableData: ITableData[]) => {
-
-
-
-
-  //   const data = [...selectedTableData];
-
-  //   deselected.forEach((index) => {
-  //     data.splice(index, 1);
-  //   })
-
-  //   setSelectedTableData(data);
-
-  // }
-
   const handleUnselect = (e: any) => {
-    setChange(false);
     const index = tableData.findIndex((row) => row.id === e.data.id);
     setDeselected((prevDeselected) => {
       const newDeselected = new Set(prevDeselected);
@@ -223,26 +116,7 @@ function App() {
     setSelectedTableData(selectedTableData.filter((data) => data.id !== e.data.id));
   }
 
-  // const handleSelect = (e: any) => {
-  //   const newDeSelectedData = deselected.filter((data) => data.id !== e.data.id);
-  //   setDeselected(newDeSelectedData);
-  // }
-
-  // const onUnselect = () => {
-  //   if (deselected.length > 0 && selectedTableData.length > 0) {
-  //     deselected.forEach((index) => {
-  //       selectedTableData.splice(index, 1);
-  //     })
-
-  //     setSelectedTableData(selectedTableData);
-  //   }
-  // }
-
-
-
   const handleOnSelect = (e: any) => {
-
-    setChange(true);
     setSelectedTableData([...selectedTableData, e.data]);
     const index = tableData.findIndex((row) => row.id === e.data.id);
     if (deselected.includes(index)) {

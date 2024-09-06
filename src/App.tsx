@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator';
 import { Column } from 'primereact/column';
@@ -6,37 +6,33 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import { Button } from 'primereact/button';
 import { InputNumber, InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { BiChevronDown } from 'react-icons/bi';
-import { useLocalStorage } from 'primereact/hooks';
-import './App.css'
+import './App.css';
 
 interface ITableData {
-  id: number
-  title: String,
-  place_of_origin: String,
-  artist_display: String,
-  inscriptions: String,
-  date_start: String,
-  date_end: String
+  id: number;
+  title: String;
+  place_of_origin: String;
+  artist_display: String;
+  inscriptions: String;
+  date_start: String;
+  date_end: String;
 }
 
 function App() {
-
   const op = useRef(null);
 
-  const [tableData, setTableData] = useState<ITableData[]>([])
+  const [tableData, setTableData] = useState<ITableData[]>([]);
   const [selectedTableData, setSelectedTableData] = useState<ITableData[]>([]);
-  // const [deselectedRows, setDeselectedRows] = useState<ITableData[]>([]);
-  const [totalData, setTotalData] = useState(0)
+  const [totalData, setTotalData] = useState(0);
   const [page, setPage] = useState(0);
   const [actualPage, setActualPage] = useState(0);
-  const [selectrows, setSelectRows] = useState<number>(0)
-
-  const [deselected, setDeselected] = useLocalStorage<number[]>([], 'deselected')
+  const [selectrows, setSelectRows] = useState<number>(0);
+  const [deselected, setDeselected] = useState<{ [key: number]: number[] }>({});
 
   const onPageChange = (event: PaginatorPageChangeEvent) => {
     setActualPage((event.first / 12) + 1);
     setPage(event.first);
-    handleFetch()
+    handleFetch();
   };
 
   const modifyData = (data: { data: ITableData[] }) => {
@@ -48,7 +44,7 @@ function App() {
         artist_display: obj.artist_display,
         inscriptions: obj.inscriptions,
         date_start: obj.date_start,
-        date_end: obj.date_end
+        date_end: obj.date_end,
       };
       acc.push(modifiedObj);
       return acc;
@@ -69,9 +65,8 @@ function App() {
 
   useEffect(() => {
     handleFetch();
-    localStorage.clear()
-  }, [])
-
+    localStorage.clear();
+  }, []);
 
   useEffect(() => {
     handleSelectRows(selectrows);
@@ -79,28 +74,19 @@ function App() {
 
   const handleSelectRows = (rows: number) => {
     const rowsPerPage = 12;
-  
+
     if (rows > 0) {
       const rhs = rows - rowsPerPage * (actualPage - 1);
-      let filteredRows = tableData;
-  
-      if (rhs > 0) {
-        filteredRows = filteredRows.slice(0, rhs);
-        if(deselected.length > 0) {
-          filteredRows = filteredRows.filter(
-            (_, index) => !deselected.includes(index)
-          );
-        }
-      } else {
-        filteredRows = filteredRows.slice(0, rows);
-        if(deselected.length > 0) {
-          filteredRows = filteredRows.filter(
-            (_, index) => !deselected.includes(index)
-          );
-        }
+      let slicedRows = tableData.slice(0, rhs > 0 ? rhs : rows);
+
+      if (deselected[actualPage]?.length > 0) {
+        slicedRows = slicedRows.filter(
+          (_, index) => !deselected[actualPage].includes(index)
+        );
       }
-  
-      setSelectedTableData(filteredRows);
+
+      setSelectedTableData(slicedRows);
+      console.log('selectedTableData', page, rhs, slicedRows);
     } else {
       setSelectedTableData([]);
     }
@@ -109,24 +95,27 @@ function App() {
   const handleUnselect = (e: any) => {
     const index = tableData.findIndex((row) => row.id === e.data.id);
     setDeselected((prevDeselected) => {
-      const newDeselected = new Set(prevDeselected);
-      newDeselected.add(index);
-      return Array.from(newDeselected);
+      const newDeselected = { ...prevDeselected };
+      if (!newDeselected[actualPage]) {
+        newDeselected[actualPage] = [];
+      }
+      newDeselected[actualPage].push(index);
+      return newDeselected;
     });
     setSelectedTableData(selectedTableData.filter((data) => data.id !== e.data.id));
-  }
+  };
 
   const handleOnSelect = (e: any) => {
     setSelectedTableData([...selectedTableData, e.data]);
     const index = tableData.findIndex((row) => row.id === e.data.id);
-    if (deselected.includes(index)) {
+    if (deselected[actualPage]?.includes(index)) {
       setDeselected((prevDeselected) => {
-        const newDeselected = new Set(prevDeselected);
-        newDeselected.delete(index);
-        return Array.from(newDeselected);
+        const newDeselected = { ...prevDeselected };
+        newDeselected[actualPage] = newDeselected[actualPage].filter((i) => i !== index);
+        return newDeselected;
       });
     }
-  }
+  };
 
   return (
     <>
@@ -135,12 +124,10 @@ function App() {
           value={tableData}
           selectionMode={'checkbox'}
           selection={selectedTableData}
-          // onSelectionChange={handleSelectionChange}
           dataKey="id"
           tableStyle={{ minWidth: '50rem' }}
           onRowUnselect={handleUnselect}
           onRowSelect={handleOnSelect}
-        // virtualScrollerOptions={{ lazy: true, loadingTemplate: loadingTemplate }}
         >
           <Column selectionMode="multiple" headerStyle={{ width: '3rem' }}></Column>
           <Column field='dropdown' header={
@@ -167,7 +154,7 @@ function App() {
         <Paginator first={page} rows={tableData.length} totalRecords={totalData} onPageChange={onPageChange} />
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

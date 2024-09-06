@@ -65,6 +65,7 @@ function App() {
 
   useEffect(() => {
     handleFetch();
+    setActualPage(1)
     localStorage.clear();
   }, []);
 

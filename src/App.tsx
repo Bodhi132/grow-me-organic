@@ -104,7 +104,7 @@ function App() {
     });
     setSelectedTableData(selectedTableData.filter((data) => data.id !== e.data.id));
   };
-
+  
   const handleOnSelect = (e: any) => {
     setSelectedTableData([...selectedTableData, e.data]);
     const index = tableData.findIndex((row) => row.id === e.data.id);
